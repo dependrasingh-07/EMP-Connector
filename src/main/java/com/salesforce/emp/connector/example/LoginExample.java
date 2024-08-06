@@ -8,18 +8,16 @@ package com.salesforce.emp.connector.example;
 
 import static com.salesforce.emp.connector.LoginHelper.login;
 
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import org.eclipse.jetty.util.ajax.JSON;
 
 import com.salesforce.emp.connector.BayeuxParameters;
 import com.salesforce.emp.connector.EmpConnector;
-import com.salesforce.emp.connector.LoginHelper;
 import com.salesforce.emp.connector.TopicSubscription;
+import org.eclipse.jetty.util.ajax.JSON;
 
 /**
  * An example of using the EMP connector using login credentials
@@ -55,7 +53,7 @@ public class LoginExample {
 
         BayeuxParameters params = tokenProvider.login();
 
-        Consumer<Map<String, Object>> consumer = event -> workerThreadPool.submit(() -> System.out.println(String.format("Received:\n%s", JSON.toString(event))));
+        Consumer<Map<String, Object>> consumer = event -> workerThreadPool.submit(() -> System.out.println(String.format("Received:\n%s", new JSON().toJSON(event))));
 
         EmpConnector connector = new EmpConnector(params);
 

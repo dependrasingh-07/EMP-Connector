@@ -67,19 +67,24 @@
     <dependencies>
         <dependency>
             <groupId>org.cometd.java</groupId>
-            <artifactId>cometd-java-client</artifactId>
-            <version>4.0.4</version>
+            <artifactId>cometd-java-client-http-jetty</artifactId>
+            <version>8.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util-ajax</artifactId>
+            <version>12.0.12</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.6</version>
+            <version>1.5.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

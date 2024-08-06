@@ -13,10 +13,14 @@ import java.nio.ByteBuffer;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.jetty.client.ByteBufferRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.ByteBufferContentProvider;
+import org.eclipse.jetty.client.HttpClientTransport;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -112,15 +116,24 @@ public class LoginHelper {
 
     public static BayeuxParameters login(URL loginEndpoint, String username, String password,
             BayeuxParameters parameters) throws Exception {
-        HttpClient client = new HttpClient(parameters.sslContextFactory());
+        HttpClientTransport transport = new HttpClientTransportOverHTTP();
+        HttpClient client = new HttpClient(transport);
+        client.setSslContextFactory(new SslContextFactory.Client());
         try {
-            client.getProxyConfiguration().getProxies().addAll(parameters.proxies());
+            parameters.proxies().forEach(proxy -> {
+                client.getProxyConfiguration().addProxy(proxy);
+            });
             client.start();
             URL endpoint = new URL(loginEndpoint, getSoapUri());
-            Request post = client.POST(endpoint.toURI());
-            post.content(new ByteBufferContentProvider("text/xml", ByteBuffer.wrap(soapXmlForLogin(username, password))));
-            post.header("SOAPAction", "''");
-            post.header("PrettyPrint", "Yes");
+            Request.Content content = new ByteBufferRequestContent("text/xml", ByteBuffer.wrap(soapXmlForLogin(username, password)));
+            Request post = client
+                    .newRequest(endpoint.toURI())
+                    .method(HttpMethod.POST)
+                    .headers(headers -> {
+                        headers.add("SOAPAction", "''");
+                        headers.add("PrettyPrint", "Yes");
+                    })
+                    .body(content);
             ContentResponse response = post.send();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
