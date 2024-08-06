@@ -56,7 +56,7 @@ public class BearerTokenExample {
             }
         };
 
-        Consumer<Map<String, Object>> consumer = event -> workerThreadPool.submit(() -> System.out.println(String.format("Received:\n%s, \nEvent processed by threadName:%s, threadId: %s", JSON.toString(event), Thread.currentThread().getName(), Thread.currentThread().getId())));
+        Consumer<Map<String, Object>> consumer = event -> workerThreadPool.submit(() -> System.out.println(String.format("Received:\n%s, \nEvent processed by threadName:%s, threadId: %s", new JSON().toJSON(event), Thread.currentThread().getName(), Thread.currentThread().getId())));
         EmpConnector connector = new EmpConnector(params);
 
         connector.addListener(Channel.META_CONNECT, new LoggingListener(true, true))
